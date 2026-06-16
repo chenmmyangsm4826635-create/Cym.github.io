@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>健身文献助手 — 科学健身，用证据说话</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg-primary:#0d1117;--bg-secondary:#161b22;--bg-card:#1c2129;--bg-input:#0d1117;--border:#30363d;--text-primary:#e6edf3;--text-secondary:#8b949e;--text-muted:#6e7681;--accent:#f0883e;--accent-glow:rgba(240,136,62,0.35);--accent-light:#ffb77c;--gold:#d4a853;--success:#3fb950;--danger:#f85149;--info:#58a6ff;--radius:8px;--radius-lg:12px;--shadow:0 4px 24px rgba(0,0,0,0.4);--transition:0.2s ease}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans SC",sans-serif;background:var(--bg-primary);color:var(--text-primary);line-height:1.6;min-height:100vh;-webkit-font-smoothing:antialiased}
+.container{max-width:960px;margin:0 auto;padding:0 20px}
+.header{background:linear-gradient(135deg,var(--bg-secondary) 0%,#1a1f2e 100%);border-bottom:1px solid var(--border);padding:32px 0 24px;text-align:center;position:relative;overflow:hidden}
+.header::before{content:"";position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:400px;height:120px;background:radial-gradient(ellipse,var(--accent-glow) 0%,transparent 70%);pointer-events:none}
+.logo{font-size:2rem;font-weight:800;letter-spacing:1px;background:linear-gradient(135deg,var(--accent),var(--accent-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;position:relative}
+.subtitle{color:var(--text-secondary);font-size:0.9rem;margin-top:4px}
+.api-key-bar{background:var(--bg-secondary);border-bottom:1px solid var(--border);padding:12px 0}
+.api-key-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.api-key-row select{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:0.8rem;padding:6px 10px;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath d='M5 7L1 3h8z' fill='%238b949e'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 6px center;padding-right:22px}
+.api-key-row select:focus{border-color:var(--accent)}
+.api-key-row select option{background:var(--bg-card);color:var(--text-primary)}
+.api-key-row input.api-sm{max-width:180px;min-width:120px}
+.api-key-row input.api-xs{max-width:130px;min-width:80px}
+.api-key-row .api-sep{color:var(--text-muted);font-size:0.7rem}
+@media(max-width:900px){.api-key-row input.api-sm,.api-key-row input.api-xs{max-width:100%;min-width:100%}}
+.api-key-row label{color:var(--text-secondary);font-size:0.85rem;white-space:nowrap;font-weight:600}
+.api-key-row input{flex:1;min-width:200px;padding:8px 12px;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:0.85rem;outline:none;transition:border var(--transition)}
+.api-key-row input:focus{border-color:var(--accent)}
+.api-key-row input::placeholder{color:var(--text-muted)}
+.mode-badge{display:inline-flex;align-items:center;gap:5px;font-size:0.78rem;padding:4px 12px;border-radius:20px;font-weight:700;white-space:nowrap}
+.mode-badge.api{background:rgba(240,136,62,0.15);color:var(--accent-light);border:1px solid rgba(240,136,62,0.4)}
+.mode-badge.local{background:rgba(63,185,80,0.12);color:var(--success);border:1px solid rgba(63,185,80,0.4)}
+.mode-dot{width:7px;height:7px;border-radius:50%}
+.mode-badge.api .mode-dot{background:var(--accent)}
+.mode-badge.local .mode-dot{background:var(--success)}
+.search-section{padding:28px 0 20px}
+.search-row{display:flex;gap:10px;align-items:stretch;flex-wrap:wrap}
+.search-input-wrap{flex:1;min-width:240px;position:relative}
+.search-input-wrap input{width:100%;padding:14px 44px 14px 16px;background:var(--bg-card);border:2px solid var(--border);border-radius:var(--radius-lg);color:var(--text-primary);font-size:0.95rem;outline:none;transition:border var(--transition),box-shadow var(--transition)}
+.search-input-wrap input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+.search-input-wrap input::placeholder{color:var(--text-muted)}
+.search-icon{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--text-muted);pointer-events:none;font-size:1.1rem}
+.filter-select{padding:14px 36px 14px 14px;background:var(--bg-card);border:2px solid var(--border);border-radius:var(--radius-lg);color:var(--text-primary);font-size:0.9rem;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%238b949e'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;transition:border var(--transition);min-width:180px}
+.filter-select:focus{border-color:var(--accent)}
+.filter-select option{background:var(--bg-card);color:var(--text-primary)}
+.search-btn{padding:14px 28px;background:linear-gradient(135deg,var(--accent),#e07830);border:none;border-radius:var(--radius-lg);color:#fff;font-size:0.95rem;font-weight:700;cursor:pointer;transition:all var(--transition);white-space:nowrap;letter-spacing:0.5px}
+.search-btn:hover{transform:translateY(-1px);box-shadow:0 4px 20px var(--accent-glow)}
+.search-btn:active{transform:translateY(0)}
+.search-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none;box-shadow:none}
+.cn-panel{border-top:1px solid var(--border);margin-top:14px;padding-top:14px}
+.cn-toggle-btn{background:transparent;border:1px solid var(--border);color:var(--text-secondary);padding:6px 14px;border-radius:var(--radius);cursor:pointer;font-size:0.8rem;transition:all var(--transition);font-weight:600}
+.cn-toggle-btn:hover{border-color:var(--accent);color:var(--accent-light)}
+.cn-toggle-btn.active{background:rgba(240,136,62,0.1);border-color:var(--accent);color:var(--accent-light)}
+.cn-categories{display:none;margin-top:12px}
+.cn-categories.open{display:block}
+.cn-cat-label{font-size:0.75rem;color:var(--accent-light);font-weight:700;margin:10px 0 6px}
+.cn-tags{display:flex;flex-wrap:wrap;gap:6px}
+.cn-tag-btn{background:rgba(240,136,62,0.08);border:1px solid rgba(240,136,62,0.2);color:var(--accent-light);padding:4px 12px;border-radius:14px;cursor:pointer;font-size:0.74rem;transition:all var(--transition);white-space:nowrap}
+.cn-tag-btn:hover{background:rgba(240,136,62,0.2);border-color:var(--accent)}
+.cn-tag-btn.selected{background:var(--accent);color:#fff;border-color:var(--accent)}
+.translate-indicator{display:none;font-size:0.75rem;color:var(--info);margin-top:6px;align-items:center;gap:4px}
+.translate-indicator.show{display:inline-flex}
+.calc-panel{border-top:1px solid var(--border);margin-top:20px;padding-top:16px}
+.calc-toggle-btn{background:transparent;border:1px solid var(--border);color:var(--text-secondary);padding:6px 14px;border-radius:var(--radius);cursor:pointer;font-size:0.8rem;transition:all var(--transition);font-weight:600}
+.calc-toggle-btn:hover{border-color:var(--accent);color:var(--accent-light)}
+.calc-toggle-btn.active{background:rgba(240,136,62,0.1);border-color:var(--accent);color:var(--accent-light)}
+.calc-body{display:none;margin-top:14px}
+.calc-body.open{display:block}
+.calc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:12px}
+.calc-field label{display:block;font-size:0.75rem;color:var(--text-secondary);margin-bottom:3px;font-weight:600}
+.calc-field input,.calc-field select{width:100%;padding:8px 10px;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:0.85rem;outline:none;transition:border var(--transition)}
+.calc-field input:focus,.calc-field select:focus{border-color:var(--accent)}
+.calc-field input::placeholder{color:var(--text-muted)}
+.calc-field select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath d='M5 7L1 3h8z' fill='%238b949e'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center}
+.calc-results{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.calc-card{background:rgba(240,136,62,0.06);border:1px solid rgba(240,136,62,0.2);border-radius:var(--radius);padding:14px;text-align:center}
+.calc-card-value{font-size:1.6rem;font-weight:800;color:var(--accent-light);line-height:1.2}
+.calc-card-label{font-size:0.72rem;color:var(--text-secondary);margin-top:4px}
+.calc-field-row{display:flex;gap:10px;align-items:flex-end}
+.calc-note{font-size:0.72rem;color:var(--text-muted);margin-top:10px;line-height:1.5}
+.calc-gender-tabs{display:flex;gap:0;margin-bottom:12px}
+.calc-gender-tab{flex:1;padding:8px;text-align:center;background:var(--bg-input);border:1px solid var(--border);cursor:pointer;font-size:0.8rem;font-weight:600;color:var(--text-secondary);transition:all var(--transition)}
+.calc-gender-tab:first-child{border-radius:var(--radius) 0 0 var(--radius)}
+.calc-gender-tab:last-child{border-radius:0 var(--radius) var(--radius) 0}
+.calc-gender-tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+@media(max-width:640px){.calc-grid{grid-template-columns:1fr 1fr}.calc-results{grid-template-columns:1fr 1fr}}
+
+.search-hint{margin-top:10px;font-size:0.8rem;color:var(--text-muted);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.search-hint span{background:var(--bg-card);padding:3px 10px;border-radius:4px;border:1px solid var(--border);cursor:pointer;transition:all var(--transition);font-size:0.75rem}
+.search-hint span:hover{border-color:var(--accent);color:var(--accent-light)}
+.status-bar{display:flex;align-items:center;justify-content:space-between;padding:12px 0;flex-wrap:wrap;gap:10px}
+.result-count{font-size:0.9rem;color:var(--text-secondary)}
+.result-count strong{color:var(--accent-light)}
+.spinner{display:none;width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.7s linear infinite}
+.spinner.active{display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.results-grid{display:flex;flex-direction:column;gap:16px;padding-bottom:40px}
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;transition:all var(--transition)}
+.card:hover{border-color:#4a5568;box-shadow:var(--shadow)}
+.card-header{padding:18px 20px;cursor:default}
+.card-title{font-size:1.05rem;font-weight:700;color:var(--text-primary);line-height:1.5;margin-bottom:10px}
+.card-meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:0.8rem;color:var(--text-secondary);margin-bottom:8px}
+.card-meta-item{display:inline-flex;align-items:center;gap:4px}
+.card-authors{font-size:0.8rem;color:var(--text-muted);margin-bottom:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card-tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.72rem;font-weight:700;letter-spacing:0.3px}
+.tag-meta{background:rgba(240,136,62,0.18);color:var(--accent-light);border:1px solid rgba(240,136,62,0.3)}
+.tag-rct{background:rgba(88,166,255,0.18);color:var(--info);border:1px solid rgba(88,166,255,0.3)}
+.tag-review{background:rgba(212,168,83,0.18);color:var(--gold);border:1px solid rgba(212,168,83,0.3)}
+.tag-other{background:rgba(139,148,158,0.15);color:var(--text-secondary);border:1px solid rgba(139,148,158,0.3)}
+.card-actions{display:flex;gap:8px;padding:0 20px 16px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius);font-size:0.82rem;font-weight:600;cursor:pointer;border:none;transition:all var(--transition)}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text-secondary)}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent-light);background:rgba(240,136,62,0.06)}
+.btn-accent{background:linear-gradient(135deg,var(--accent),#e07830);color:#fff;border:none}
+.btn-accent:hover{box-shadow:0 2px 12px var(--accent-glow);transform:translateY(-1px)}
+.btn-accent:disabled{opacity:0.5;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-accent.loading{position:relative;color:transparent}
+.btn-accent.loading::after{content:"";position:absolute;width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;top:50%;left:50%;margin:-8px 0 0 -8px}
+.expandable{display:none}
+.expandable.open{display:block}
+.abstract-box{margin:0 20px 16px;padding:14px 18px;background:rgba(0,0,0,0.25);border-radius:var(--radius);border:1px solid var(--border);font-size:0.85rem;color:var(--text-secondary);line-height:1.7;max-height:300px;overflow-y:auto}
+.interpret-box{margin:0 20px 16px;padding:18px;background:linear-gradient(135deg,rgba(240,136,62,0.06),rgba(240,136,62,0.02));border-radius:var(--radius);border:1px solid rgba(240,136,62,0.2);font-size:0.88rem;line-height:1.8}
+.interpret-box.local-mode{background:linear-gradient(135deg,rgba(63,185,80,0.04),rgba(63,185,80,0.01));border:1px solid rgba(63,185,80,0.25)}
+.interpret-box h4{color:var(--accent-light);font-size:0.9rem;margin:14px 0 6px}
+.interpret-box.local-mode h4{color:var(--success)}
+.interpret-box h4:first-child{margin-top:0}
+.interpret-box p,.interpret-box li{margin-bottom:6px;color:var(--text-primary)}
+.interpret-box ul{padding-left:18px;margin-bottom:8px}
+.interpret-box strong{color:var(--accent-light)}
+.interpret-box.local-mode strong{color:var(--success)}
+.interpret-loading{display:flex;align-items:center;gap:10px;padding:20px;color:var(--text-secondary);font-size:0.9rem}
+.interpret-loading .spinner{display:inline-block}
+.interpret-mode-label{font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:10px;display:inline-block;margin-bottom:10px}
+.interpret-mode-label.api{background:rgba(240,136,62,0.15);color:var(--accent-light)}
+.interpret-mode-label.local{background:rgba(63,185,80,0.15);color:var(--success)}
+.toast-container{position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+.toast{padding:12px 20px;border-radius:var(--radius);font-size:0.85rem;font-weight:600;color:#fff;animation:slideIn 0.3s ease;max-width:360px;box-shadow:var(--shadow)}
+.toast-error{background:var(--danger)}.toast-success{background:var(--success)}.toast-info{background:var(--info)}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+.empty-state{text-align:center;padding:60px 20px;color:var(--text-muted)}
+.empty-state .empty-icon{font-size:3rem;margin-bottom:16px}
+.empty-state h3{font-size:1.2rem;color:var(--text-secondary);margin-bottom:8px}
+.empty-state p{font-size:0.9rem}
+.footer{text-align:center;padding:20px;border-top:1px solid var(--border);color:var(--text-muted);font-size:0.78rem}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#4a5568}
+@media(max-width:640px){.logo{font-size:1.5rem}.search-row{flex-direction:column}.filter-select{min-width:100%}.search-btn{width:100%}.card-title{font-size:0.95rem}.card-actions{flex-direction:column}.btn{justify-content:center}.api-key-row{flex-direction:column;align-items:stretch}}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="container">
+    <h1 class="logo">🏋️ 健身文献助手</h1>
+    <p class="subtitle">科学健身，用证据说话 — PubMed 真实数据 + 双模解读引擎 + 中文搜索</p>
+  </div>
+</header>
+
+<div class="api-key-bar">
+  <div class="container">
+    <div class="api-key-row">
+      <label for="apiProvider" style="font-size:0.8rem;white-space:nowrap;font-weight:600;color:var(--text-secondary)">🔑 API 平台</label>
+      <select id="apiProvider" onchange="onProviderChange()">
+        <option value="">不使用（本地模式）</option>
+        <option value="deepseek">DeepSeek</option>
+        <option value="openai">OpenAI</option>
+        <option value="siliconflow">硅基流动 (SiliconFlow)</option>
+        <option value="zhipu">智谱 AI (GLM)</option>
+        <option value="aliyun">阿里百炼 (Qwen)</option>
+        <option value="custom">🛠 自定义 / API中转站</option>
+      </select>
+      <span class="api-sep">|</span>
+      <input type="password" id="apiKeyInput" class="api-sm" placeholder="API Key" autocomplete="off" onchange="onKeyChange()">
+      <span class="api-sep">|</span>
+      <input type="text" id="apiEndpoint" class="api-sm" placeholder="接口地址（自动填入）" autocomplete="off" onchange="onEndpointChange()" style="display:none">
+      <input type="text" id="apiModel" class="api-xs" placeholder="模型名" autocomplete="off" onchange="onModelChange()" style="display:none">
+      <span class="mode-badge local" id="modeBadge"><span class="mode-dot"></span> <span id="modeLabel">本地智能模式</span></span>
+    </div>
+  </div>
+</div>
+
+<section class="search-section">
+  <div class="container">
+    <div class="search-row">
+      <div class="search-input-wrap">
+        <input type="text" id="searchInput" placeholder="输入中文或英文关键词，如：抗阻训练 增肌  或  resistance training" autocomplete="off">
+        <span class="search-icon">🔍</span>
+      </div>
+      <select class="filter-select" id="filterSelect">
+        <option value="meta" selected>⭐ Meta分析 / 系统综述（推荐）</option>
+        <option value="rct">🧪 随机对照试验（RCT）</option>
+        <option value="all">📚 全部文献</option>
+      </select>
+      <button class="search-btn" id="searchBtn" onclick="doSearch()">🔬 检索文献</button>
+    </div>
+    <div class="translate-indicator" id="translateHint">🌐 中文关键词将自动翻译为英文搜索</div>
+    <div class="search-hint">
+      英文速搜：
+      <span onclick="quickSearch('resistance training muscle hypertrophy')">resistance training muscle hypertrophy</span>
+      <span onclick="quickSearch('protein intake muscle protein synthesis')">protein intake muscle protein synthesis</span>
+      <span onclick="quickSearch('creatine supplementation strength')">creatine supplementation strength</span>
+      <span onclick="quickSearch('HIIT fat loss body composition')">HIIT fat loss body composition</span>
+    </div>
+    <div class="cn-panel">
+      <button class="cn-toggle-btn" id="cnToggle" onclick="toggleCNPanel()">🇨🇳 中文关键词选词（点我展开）— 不会英文也能搜！</button>
+      <div class="cn-categories" id="cnCategories">
+        <div class="cn-cat-label">🏋️ 训练方式</div>
+        <div class="cn-tags">
+          <span class="cn-tag-btn" onclick="pickCN('抗阻训练')">抗阻训练</span>
+          <span class="cn-tag-btn" onclick="pickCN('增肌')">增肌</span>
+          <span class="cn-tag-btn" onclick="pickCN('肌肉肥大')">肌肉肥大</span>
+          <span class="cn-tag-btn" onclick="pickCN('力量训练')">力量训练</span>
+          <span class="cn-tag-btn" onclick="pickCN('高强度间歇')">高强度间歇</span>
+          <span class="cn-tag-btn" onclick="pickCN('有氧运动')">有氧运动</span>
+          <span class="cn-tag-btn" onclick="pickCN('离心训练')">离心训练</span>
+          <span class="cn-tag-btn" onclick="pickCN('爆发力')">爆发力</span>
+          <span class="cn-tag-btn" onclick="pickCN('肌耐力')">肌耐力</span>
+          <span class="cn-tag-btn" onclick="pickCN('训练容量')">训练容量</span>
+          <span class="cn-tag-btn" onclick="pickCN('力竭训练')">力竭训练</span>
+          <span class="cn-tag-btn" onclick="pickCN('血流限制')">血流限制</span>
+        </div>
+        <div class="cn-cat-label">💊 补剂 & 营养</div>
+        <div class="cn-tags">
+          <span class="cn-tag-btn" onclick="pickCN('肌酸')">肌酸</span>
+          <span class="cn-tag-btn" onclick="pickCN('乳清蛋白')">乳清蛋白</span>
+          <span class="cn-tag-btn" onclick="pickCN('蛋白质摄入')">蛋白质摄入</span>
+          <span class="cn-tag-btn" onclick="pickCN('支链氨基酸')">支链氨基酸</span>
+          <span class="cn-tag-btn" onclick="pickCN('咖啡因')">咖啡因</span>
+          <span class="cn-tag-btn" onclick="pickCN('β丙氨酸')">β丙氨酸</span>
+          <span class="cn-tag-btn" onclick="pickCN('碳水摄入')">碳水摄入</span>
+          <span class="cn-tag-btn" onclick="pickCN('生酮饮食')">生酮饮食</span>
+          <span class="cn-tag-btn" onclick="pickCN('间歇断食')">间歇断食</span>
+        </div>
+        <div class="cn-cat-label">📏 身体指标</div>
+        <div class="cn-tags">
+          <span class="cn-tag-btn" onclick="pickCN('体成分')">体成分</span>
+          <span class="cn-tag-btn" onclick="pickCN('瘦体重')">瘦体重</span>
+          <span class="cn-tag-btn" onclick="pickCN('减脂')">减脂</span>
+          <span class="cn-tag-btn" onclick="pickCN('睾酮')">睾酮</span>
+          <span class="cn-tag-btn" onclick="pickCN('皮质醇')">皮质醇</span>
+          <span class="cn-tag-btn" onclick="pickCN('生长激素')">生长激素</span>
+          <span class="cn-tag-btn" onclick="pickCN('肌肉蛋白合成')">肌肉蛋白合成</span>
+          <span class="cn-tag-btn" onclick="pickCN('延迟性肌肉酸痛')">延迟性肌肉酸痛</span>
+        </div>
+        <div class="cn-cat-label">👥 人群</div>
+        <div class="cn-tags">
+          <span class="cn-tag-btn" onclick="pickCN('老年人')">老年人</span>
+          <span class="cn-tag-btn" onclick="pickCN('初学者')">初学者</span>
+          <span class="cn-tag-btn" onclick="pickCN('运动员')">运动员</span>
+          <span class="cn-tag-btn" onclick="pickCN('女性')">女性</span>
+          <span class="cn-tag-btn" onclick="pickCN('青少年')">青少年</span>
+          <span class="cn-tag-btn" onclick="pickCN('肌少症')">肌少症</span>
+        </div>
+        <div class="cn-cat-label">🏆 力量举</div>
+        <div class="cn-tags">
+          <span class="cn-tag-btn" onclick="pickCN('力量举')">力量举</span>
+          <span class="cn-tag-btn" onclick="pickCN('深蹲')">深蹲</span>
+          <span class="cn-tag-btn" onclick="pickCN('卧推')">卧推</span>
+          <span class="cn-tag-btn" onclick="pickCN('硬拉')">硬拉</span>
+          <span class="cn-tag-btn" onclick="pickCN('三大项')">三大项</span>
+          <span class="cn-tag-btn" onclick="pickCN('1RM')">1RM</span>
+          <span class="cn-tag-btn" onclick="pickCN('杠铃')">杠铃</span>
+          <span class="cn-tag-btn" onclick="pickCN('相扑硬拉')">相扑硬拉</span>
+        </div>
+        <div class="cn-cat-label">🩺 康复 & 恢复</div>
+        <div class="cn-tags">
+          <span class="cn-tag-btn" onclick="pickCN('康复')">康复</span>
+          <span class="cn-tag-btn" onclick="pickCN('睡眠')">睡眠</span>
+          <span class="cn-tag-btn" onclick="pickCN('拉伸')">拉伸</span>
+          <span class="cn-tag-btn" onclick="pickCN('热身')">热身</span>
+          <span class="cn-tag-btn" onclick="pickCN('激活')">激活</span>
+          <span class="cn-tag-btn" onclick="pickCN('恢复')">恢复</span>
+          <span class="cn-tag-btn" onclick="pickCN('泡沫轴')">泡沫轴</span>
+          <span class="cn-tag-btn" onclick="pickCN('物理治疗')">物理治疗</span>
+          <span class="cn-tag-btn" onclick="pickCN('损伤预防')">损伤预防</span>
+          <span class="cn-tag-btn" onclick="pickCN('冷冻疗法')">冷冻疗法</span>
+        </div>
+        <div class="cn-cat-label">🔬 研究类型</div>
+        <div class="cn-tags">
+          <span class="cn-tag-btn" onclick="pickCN('Meta分析')">Meta分析</span>
+          <span class="cn-tag-btn" onclick="pickCN('随机对照')">随机对照</span>
+          <span class="cn-tag-btn" onclick="pickCN('系统综述')">系统综述</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<main class="container">
+  <div class="status-bar">
+    <span class="result-count" id="resultCount"></span>
+    <span class="spinner" id="spinner"></span>
+  </div>
+  <div class="results-grid" id="resultsGrid"></div>
+</main>
+
+<section class="container" style="padding-bottom:10px">
+  <div class="calc-panel">
+    <button class="calc-toggle-btn" id="calcToggle" onclick="toggleCalc()">🧮 健身计算器（体脂率 · FFMI · 基础代谢 · 总消耗）— 点我展开</button>
+    <div class="calc-body" id="calcBody">
+      <div class="calc-gender-tabs">
+        <div class="calc-gender-tab active" id="genderMale" onclick="setGender('male')">♂ 男性</div>
+        <div class="calc-gender-tab" id="genderFemale" onclick="setGender('female')">♀ 女性</div>
+      </div>
+      <div class="calc-grid">
+        <div class="calc-field"><label>年龄（岁）</label><input type="number" id="calcAge" placeholder="例：25" min="10" max="100"></div>
+        <div class="calc-field"><label>身高（cm）</label><input type="number" id="calcHeight" placeholder="例：175" min="100" max="250" step="0.1"></div>
+        <div class="calc-field"><label>体重（kg）</label><input type="number" id="calcWeight" placeholder="例：75" min="30" max="250" step="0.1"></div>
+        <div class="calc-field"><label>颈围（cm）</label><input type="number" id="calcNeck" placeholder="例：38" min="20" max="60" step="0.1"></div>
+        <div class="calc-field"><label>腰围（cm）</label><input type="number" id="calcWaist" placeholder="例：80" min="40" max="160" step="0.1"></div>
+        <div class="calc-field" id="hipField" style="display:none"><label>臀围（cm）</label><input type="number" id="calcHip" placeholder="例：95" min="50" max="180" step="0.1"></div>
+        <div class="calc-field"><label>活动水平</label>
+          <select id="calcActivity">
+            <option value="1.2">🛋️ 久坐不动（几乎不运动）</option>
+            <option value="1.375" selected>🚶 轻度活动（每周1-3次）</option>
+            <option value="1.55">🏃 中度活动（每周3-5次）</option>
+            <option value="1.725">💪 高度活动（每周6-7次）</option>
+            <option value="1.9">🔥 极高强度（每天训练+体力劳动）</option>
+          </select>
+        </div>
+      </div>
+      <div class="calc-results" id="calcResults">
+        <div class="calc-card"><div class="calc-card-value">--</div><div class="calc-card-label">体脂率</div></div>
+        <div class="calc-card"><div class="calc-card-value">--</div><div class="calc-card-label">FFMI</div></div>
+        <div class="calc-card"><div class="calc-card-value">--</div><div class="calc-card-label">基础代谢 (BMR)</div></div>
+        <div class="calc-card"><div class="calc-card-value">--</div><div class="calc-card-label">每日总消耗 (TDEE)</div></div>
+      </div>
+      <div class="calc-note">
+        💡 <strong>公式说明：</strong>体脂率采用美国海军公式（颈围+腰围+臀围）；BMR采用Mifflin-St Jeor公式；TDEE = BMR × 活动系数。<br>
+        💡 <strong>FFMI参考：</strong>18以下=偏低，18-20=正常健身者，20-22=优秀自然健身者，22-25=接近自然极限，25+可能使用药物。
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="container" style="padding-bottom:14px">
+  <div class="calc-panel" style="margin-top:0;border-top:none;padding-top:0">
+    <button class="calc-toggle-btn" id="shareToggle" onclick="toggleShare()" style="font-size:0.78rem">📤 如何分享这个网站给别人？（点我查看）</button>
+    <div class="calc-body" id="shareBody">
+      <div class="calc-note" style="margin-top:8px">
+        💡 <strong>推荐方案：GitHub Pages（免费，永久链接）</strong><br>
+        1. 注册 <a href="https://github.com" target="_blank" style="color:var(--info)">GitHub</a> 账号<br>
+        2. 新建仓库，命名为 <code style="background:var(--bg-input);padding:2px 6px;border-radius:4px">你的用户名.github.io</code><br>
+        3. 把 <code style="background:var(--bg-input);padding:2px 6px;border-radius:4px">健身文献助手.html</code> 改名为 <code style="background:var(--bg-input);padding:2px 6px;border-radius:4px">index.html</code> 上传到仓库<br>
+        4. 等 1-2 分钟后，访问 <code style="background:var(--bg-input);padding:2px 6px;border-radius:4px">https://你的用户名.github.io</code> 即可！<br><br>
+        💡 <strong>备选方案：</strong>也可以上传到 Netlify、Vercel、Cloudflare Pages 等免费静态托管平台，或直接用网盘分享 HTML 文件。
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <p>数据来源：PubMed / NCBI E-utilities API &nbsp;|&nbsp; 解读引擎：DeepSeek AI（需Key）/ 本地智能引擎（免Key） &nbsp;|&nbsp; 中文→英文自动翻译 &nbsp;|&nbsp; 文献默认近5年（2021–2026）</p>
+</footer>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+
+function showToast(msg, type) {
+  type = type || "info";
+  var c = document.getElementById("toastContainer");
+  var t = document.createElement("div");
+  t.className = "toast toast-" + type; t.textContent = msg; c.appendChild(t);
+  setTimeout(function(){ t.style.opacity="0"; t.style.transition="opacity 0.3s"; setTimeout(function(){ t.remove(); },300); }, 3500);
+}
+function escapeHtml(s) { var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+
+// ===== Multi-Provider API Management =====
+var API_PROVIDERS = {
+  "deepseek":  { name:"DeepSeek",            endpoint:"https://api.deepseek.com/v1/chat/completions",          model:model },
+  "openai":    { name:"OpenAI",              endpoint:"https://api.openai.com/v1/chat/completions",             model:"gpt-4o-mini" },
+  "siliconflow":{ name:"硅基流动 SiliconFlow", endpoint:"https://api.siliconflow.cn/v1/chat/completions",       model:"deepseek-ai/DeepSeek-V3" },
+  "zhipu":     { name:"智谱 GLM",            endpoint:"https://open.bigmodel.cn/api/paas/v4/chat/completions",  model:"glm-4-flash" },
+  "aliyun":    { name:"阿里百炼 Qwen",        endpoint:"https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions", model:"qwen-plus" },
+  "custom":    { name:"自定义/中转站",         endpoint:"", model:"" }
+};
+var LS = {
+  provider: "fitness_lit_provider",
+  key:      "fitness_lit_key",
+  endpoint: "fitness_lit_endpoint",
+  model:    "fitness_lit_model"
+};
+function getApiProvider() { return localStorage.getItem(LS.provider) || ""; }
+function getApiKey()      { return localStorage.getItem(LS.key) || ""; }
+function getApiEndpoint() { return localStorage.getItem(LS.endpoint) || ""; }
+function getApiModel()    { return localStorage.getItem(LS.model) || ""; }
+function hasApiKey()      { return !!getApiKey() && !!getApiProvider() && !!getApiEndpoint(); }
+function updateModeUI() {
+  var badge = document.getElementById("modeBadge"), label = document.getElementById("modeLabel");
+  var sel = document.getElementById("apiProvider"), keyInp = document.getElementById("apiKeyInput");
+  var epInp = document.getElementById("apiEndpoint"), mdInp = document.getElementById("apiModel");
+  var provider = getApiProvider();
+  sel.value = provider;
+  keyInp.value = getApiKey();
+  if (provider && provider !== "custom") {
+    var p = API_PROVIDERS[provider];
+    epInp.value = p.endpoint; mdInp.value = p.model;
+    epInp.style.display = "inline-block"; mdInp.style.display = "inline-block";
+  } else if (provider === "custom") {
+    epInp.value = getApiEndpoint(); mdInp.value = getApiModel();
+    epInp.style.display = "inline-block"; mdInp.style.display = "inline-block";
+  } else {
+    epInp.style.display = "none"; mdInp.style.display = "none";
+  }
+  if (hasApiKey()) {
+    badge.className = "mode-badge api";
+    label.textContent = (API_PROVIDERS[provider] ? API_PROVIDERS[provider].name : provider) + " AI 模式";
+  } else {
+    badge.className = "mode-badge local";
+    label.textContent = "本地智能模式";
+  }
+}
+function onProviderChange() {
+  var v = document.getElementById("apiProvider").value;
+  localStorage.setItem(LS.provider, v);
+  if (v && v !== "custom") {
+    var p = API_PROVIDERS[v];
+    localStorage.setItem(LS.endpoint, p.endpoint);
+    localStorage.setItem(LS.model, p.model);
+  } else if (v === "custom") {
+    // Keep existing custom values or clear
+    if (!getApiEndpoint()) localStorage.setItem(LS.endpoint, "");
+    if (!getApiModel()) localStorage.setItem(LS.model, "");
+  } else {
+    localStorage.removeItem(LS.provider);
+    localStorage.removeItem(LS.endpoint);
+    localStorage.removeItem(LS.model);
+  }
+  updateModeUI();
+}
+function onKeyChange() {
+  var k = document.getElementById("apiKeyInput").value.trim();
+  if (k) localStorage.setItem(LS.key, k); else localStorage.removeItem(LS.key);
+  updateModeUI();
+}
+function onEndpointChange() {
+  localStorage.setItem(LS.endpoint, document.getElementById("apiEndpoint").value.trim());
+}
+function onModelChange() {
+  localStorage.setItem(LS.model, document.getElementById("apiModel").value.trim());
+}
+document.addEventListener("DOMContentLoaded", function(){ updateModeUI(); });
+document.getElementById("searchInput").addEventListener("keydown", function(e){ if(e.key==="Enter") doSearch(); });
+
+// ===== Chinese→English Translation =====
+var CN_DICT = {
+  "抗阻训练":"resistance training","增肌":"muscle hypertrophy","肌肉肥大":"muscle hypertrophy",
+  "力量训练":"strength training","高强度间歇":"HIIT","有氧运动":"aerobic exercise",
+  "离心训练":"eccentric training","爆发力":"power output","肌耐力":"muscular endurance",
+  "训练容量":"training volume","力竭训练":"training to failure","血流限制":"blood flow restriction BFR",
+  "肌酸":"creatine","乳清蛋白":"whey protein","蛋白质摄入":"protein intake",
+  "支链氨基酸":"BCAA","咖啡因":"caffeine","碳水摄入":"carbohydrate intake",
+  "生酮饮食":"ketogenic diet","间歇断食":"intermittent fasting",
+  "体成分":"body composition","瘦体重":"lean body mass","减脂":"fat loss",
+  "睾酮":"testosterone","皮质醇":"cortisol","生长激素":"growth hormone",
+  "肌肉蛋白合成":"muscle protein synthesis","延迟性肌肉酸痛":"DOMS",
+  "老年人":"elderly","初学者":"untrained novice","运动员":"athletes",
+  "女性":"women female","青少年":"adolescent","肌少症":"sarcopenia",
+  "Meta分析":"Meta-analysis","随机对照":"randomized controlled trial","系统综述":"systematic review",
+  "向心收缩":"concentric contraction","等长收缩":"isometric contraction",
+  "渐进超负荷":"progressive overload","周期化训练":"periodization",
+  "蛋白质时机":"protein timing","胰岛素敏感度":"insulin sensitivity",
+  "力量举":"powerlifting","三大项":"powerlifting squat bench deadlift",
+  "杠铃":"barbell","相扑硬拉":"sumo deadlift","1RM":"one repetition maximum",
+  "康复":"rehabilitation","拉伸":"stretching","热身":"warm up",
+  "激活":"activation warm up","恢复":"recovery","泡沫轴":"foam rolling",
+  "物理治疗":"physical therapy physiotherapy","损伤预防":"injury prevention",
+  "冷冻疗法":"cryotherapy","深蹲":"squat","卧推":"bench press","硬拉":"deadlift",
+  "硬拉":"deadlift","深蹲":"squat","卧推":"bench press",
+  "肌纤维类型":"muscle fiber type","线粒体":"mitochondria",
+  "肥胖":"obesity","代谢综合征":"metabolic syndrome",
+  "补剂":"supplementation","恢复":"recovery","睡眠":"sleep","热身":"warm up","拉伸":"stretching",
+  "β丙氨酸":"beta-alanine"
+};
+
+function hasChinese(str) {
+  return /[\u4e00-\u9fff\u3400-\u4dbf]/.test(str);
+}
+
+function translateCN(str) {
+  var result = str;
+  var keys = Object.keys(CN_DICT).sort(function(a,b){ return b.length - a.length; });
+  for(var i=0; i<keys.length; i++) {
+    var k = keys[i];
+    var escaped = k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    var re = new RegExp(escaped, "g");
+    result = result.replace(re, CN_DICT[k]);
+  }
+  return result;
+}
+
+function toggleCNPanel() {
+  var cat = document.getElementById("cnCategories"), btn = document.getElementById("cnToggle");
+  if(cat.classList.contains("open")) {
+    cat.classList.remove("open"); btn.classList.remove("active");
+    btn.textContent = "🇨🇳 中文关键词选词（点我展开）— 不会英文也能搜！";
+  } else {
+    cat.classList.add("open"); btn.classList.add("active");
+    btn.textContent = "🇨🇳 中文关键词选词（点我收起）";
+  }
+}
+
+var cnPicks = [];
+function pickCN(term) {
+  var idx = cnPicks.indexOf(term);
+  if(idx >= 0) cnPicks.splice(idx, 1); else cnPicks.push(term);
+  var translated = translateCN(cnPicks.join(" "));
+  document.getElementById("searchInput").value = translated;
+  document.querySelectorAll(".cn-tag-btn").forEach(function(b){
+    if(cnPicks.indexOf(b.textContent) >= 0) b.classList.add("selected"); else b.classList.remove("selected");
+  });
+  var hint = document.getElementById("translateHint");
+  if(cnPicks.length > 0) {
+    hint.classList.add("show");
+    hint.innerHTML = "🌐 已选 " + cnPicks.length + " 个中文词 → 英文: <strong>" + translated.substring(0, 80) + (translated.length>80?"...":"") + "</strong>";
+  } else { hint.classList.remove("show"); }
+}
+
+var _origQuickSearch = null;
+function quickSearch(t) {
+  cnPicks = [];
+  document.querySelectorAll(".cn-tag-btn").forEach(function(b){ b.classList.remove("selected"); });
+  document.getElementById("translateHint").classList.remove("show");
+  if(_origQuickSearch) _origQuickSearch(t);
+  else { document.getElementById("searchInput").value = t; doSearch(); }
+}
+
+// ===== PubMed API =====
+var PB = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils";
+var PROXIES = [
+  function(u){ return "https://api.allorigins.win/raw?url=" + encodeURIComponent(u); },
+  function(u){ return "https://corsproxy.io/?" + encodeURIComponent(u); },
+  function(u){ return "https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(u); }
+];
+async function pubmedFetch(url) {
+  try { var r = await fetch(url); if(r.ok) return r; } catch(e){}
+  for(var i=0; i<PROXIES.length; i++) {
+    try { var r2 = await fetch(PROXIES[i](url)); if(r2.ok) return r2; } catch(e){ continue; }
+  }
+  throw new Error("无法连接PubMed，请稍后重试");
+}
+
+async function searchPubMed(query, filter) {
+  var q = query.trim();
+  if(filter==="meta") q = "(" + q + ") AND (Meta-Analysis[ptyp] OR Systematic Review[ptyp])";
+  else if(filter==="rct") q = "(" + q + ") AND Randomized Controlled Trial[ptyp]";
+  var sp = "db=pubmed&term=" + encodeURIComponent(q) + "&sort=relevance&retmax=20&retmode=json&datetype=pdat&mindate=2021/01/01&maxdate=2026/12/31";
+  var r1 = await pubmedFetch(PB + "/esearch.fcgi?" + sp); var d1 = await r1.json();
+  var ids = (d1 && d1.esearchresult && d1.esearchresult.idlist) || []; if(!ids.length) return [];
+  var r2 = await pubmedFetch(PB + "/esummary.fcgi?db=pubmed&id=" + ids.join(",") + "&retmode=json"); var d2 = await r2.json();
+  var out = [];
+  for(var i=0; i<ids.length; i++) {
+    var doc = d2 && d2.result && d2.result[ids[i]]; if(!doc) continue;
+    var pts = (doc.pubtype || []).map(function(t){ return t.toLowerCase(); });
+    var tt = "other", tl = "文献";
+    if(pts.some(function(t){ return t.indexOf("meta-analysis")>=0; })){ tt="meta"; tl="Meta分析"; }
+    else if(pts.some(function(t){ return t.indexOf("systematic review")>=0; })){ tt="review"; tl="系统综述"; }
+    else if(pts.some(function(t){ return t.indexOf("randomized controlled trial")>=0; })){ tt="rct"; tl="RCT"; }
+    else if(pts.some(function(t){ return t.indexOf("review")>=0; })){ tt="review"; tl="综述"; }
+    out.push({id:ids[i], title:doc.title||"无标题", authors:(doc.authors||[]).map(function(a){return a.name;}).join(", ")||"未知作者", journal:doc.source||"未知期刊", year:doc.pubdate?doc.pubdate.substring(0,4):"未知", pubTypes:doc.pubtype||[], tagType:tt, tagLabel:tl});
+  }
+  return out;
+}
+
+var abstractCache = {};
+async function fetchAbstract(pmid) {
+  if(abstractCache[pmid]) return abstractCache[pmid];
+  var r = await pubmedFetch(PB + "/efetch.fcgi?db=pubmed&id=" + pmid + "&retmode=xml&rettype=abstract");
+  var t = await r.text();
+  var ms = t.match(/<AbstractText[^>]*>([\s\S]*?)<\/AbstractText>/g);
+  if(!ms){ abstractCache[pmid] = "（无摘要）"; return abstractCache[pmid]; }
+  var parts = ms.map(function(m){
+    var lm = m.match(/Label="([^"]*)"/);
+    var tm = m.match(/>([\s\S]*?)</);
+    var txt = tm ? tm[1].trim() : m.replace(/<[^>]*>/g,"").trim();
+    return lm ? lm[1] + ": " + txt : txt;
+  });
+  abstractCache[pmid] = parts.join("\n\n");
+  return abstractCache[pmid];
+}
+
+// ===== Search & Render =====
+var currentResults = [];
+async function doSearch() {
+  var rawQ = document.getElementById("searchInput").value.trim();
+  if(!rawQ){ showToast("请输入搜索关键词","error"); return; }
+  // Auto-translate Chinese
+  if(hasChinese(rawQ)) {
+    var translated = translateCN(rawQ);
+    if(translated !== rawQ) {
+      document.getElementById("searchInput").value = translated;
+      var hint = document.getElementById("translateHint");
+      hint.classList.add("show");
+      hint.innerHTML = "🌐 已翻译: <strong>" + rawQ.substring(0,30) + "</strong> → <strong>" + translated.substring(0,60) + "</strong>";
+      rawQ = translated;
+    }
+  }
+  var filter = document.getElementById("filterSelect").value;
+  var spin = document.getElementById("spinner"), grid = document.getElementById("resultsGrid");
+  var rc = document.getElementById("resultCount"), btn = document.getElementById("searchBtn");
+  btn.disabled=true; spin.classList.add("active"); rc.textContent=""; grid.innerHTML=""; currentResults=[];
+  try {
+    var rs = await searchPubMed(rawQ, filter); currentResults = rs;
+    if(!rs.length){ rc.textContent="未找到相关文献，请尝试其他关键词"; grid.innerHTML='<div class="empty-state"><div class="empty-icon">📭</div><h3>没有找到文献</h3><p>试试换个关键词，或选择「全部文献」扩大范围</p></div>'; }
+    else { rc.innerHTML = "找到 <strong>" + rs.length + "</strong> 篇文献"; renderResults(rs); }
+  } catch(e) { console.error(e); showToast("检索失败：" + e.message,"error"); rc.textContent="检索出错，请稍后重试"; }
+  finally { btn.disabled=false; spin.classList.remove("active"); }
+}
+
+function renderResults(rs) {
+  var g = document.getElementById("resultsGrid");
+  g.innerHTML = rs.map(function(r,i){
+    return '<div class="card" id="card-' + i + '"><div class="card-header"><div class="card-title">' + escapeHtml(r.title) + '</div><div class="card-meta"><span class="card-meta-item">📰 ' + escapeHtml(r.journal) + '</span><span class="card-meta-item">📅 ' + escapeHtml(r.year) + '</span><span class="card-meta-item">🆔 PMID: ' + r.id + '</span></div><div class="card-authors">👤 ' + escapeHtml(r.authors) + '</div><div class="card-tags"><span class="tag tag-' + r.tagType + '">' + r.tagLabel + '</span></div></div><div class="card-actions"><button class="btn btn-outline" onclick="toggleAbstract(' + i + ')" id="abBtn-' + i + '">📄 显示摘要</button><button class="btn btn-accent" onclick="doInterpret(' + i + ')" id="aiBtn-' + i + '">' + (hasApiKey() ? ("🤖 " + getInterpretLabel() + " 解读") : "📖 本地智能解读") + '</button></div><div class="expandable" id="abBox-' + i + '"></div><div class="expandable" id="intBox-' + i + '"></div></div>';
+  }).join("");
+}
+
+async function toggleAbstract(idx) {
+  var box = document.getElementById("abBox-" + idx), btn = document.getElementById("abBtn-" + idx);
+  if(box.classList.contains("open")){ box.classList.remove("open"); btn.textContent="📄 显示摘要"; return; }
+  box.classList.add("open"); box.innerHTML='<div class="interpret-loading"><span class="spinner" style="display:inline-block"></span> 加载摘要中...</div>'; btn.textContent="📄 隐藏摘要";
+  try { var a = await fetchAbstract(currentResults[idx].id); box.innerHTML='<div class="abstract-box">' + escapeHtml(a) + '</div>'; }
+  catch(e) { box.innerHTML='<div class="abstract-box" style="color:var(--danger)">加载失败：' + escapeHtml(e.message) + '</div>'; }
+}
+
+// ===== Interpret Dispatch =====
+function getInterpretLabel() {
+  var p = getApiProvider();
+  if (p && API_PROVIDERS[p]) return API_PROVIDERS[p].name + " AI";
+  return "AI 深度解读";
+}
+async function doInterpret(idx) {
+  if (hasApiKey()) return deepseekInterpret(idx);
+  return localInterpret(idx);
+}
+
+async function deepseekInterpret(idx) {
+  var box = document.getElementById("intBox-" + idx), btn = document.getElementById("aiBtn-" + idx);
+  var r = currentResults[idx];
+  if(box.classList.contains("open")){ box.classList.remove("open"); btn.textContent="🤖 " + getInterpretLabel() + " 解读"; return; }
+  var ab = await fetchAbstract(r.id);
+  var key = getApiKey();
+  box.classList.add("open"); box.innerHTML='<div class="interpret-loading"><span class="spinner" style="display:inline-block"></span> AI 深度解读中（约10-20秒）...</div>';
+  btn.textContent="🤖 隐藏解读"; btn.classList.add("loading"); btn.disabled=true;
+  try {
+    var endpoint = getApiEndpoint(); var model = getApiModel(); var resp = await fetch(endpoint, {
+      method:"POST",
+      headers:{"Content-Type":"application/json","Authorization":"Bearer " + key},
+      body:JSON.stringify({
+        model:model,
+        messages:[
+          {role:"system",content:"你是运动科学专家，用通俗中文向健身爱好者解释论文。读者不懂英语和统计。"},
+          {role:"user",content:"严格按5板块解读（简体中文）：\n🎯 核心结论：一句话说清研究发现。\n🧪 实验怎么做的：大白话描述（人数、分组、动作）。\n📊 数据怎么看：解释P值、置信区间等，判定是否可信。\n💪 训练应用：普通健身者怎么用。\n📚 术语解释：列出专业术语并解释。\n\n标题：" + r.title + "\n期刊：" + r.journal + "(" + r.year + ")\n摘要：" + ab}
+        ],
+        temperature:0.7, max_tokens:4096
+      })
+    });
+    if(!resp.ok){ var ed = await resp.json().catch(function(){ return {}; }); throw new Error((ed && ed.error && ed.error.message) || "HTTP " + resp.status); }
+    var data = await resp.json(); var txt = (data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || "（无返回内容）";
+    box.innerHTML = '<span class="interpret-mode-label api">🤖 AI 深度解读</span>' + fmtInterpret(txt, "api");
+  } catch(e) { console.error(e); box.innerHTML='<div class="abstract-box" style="color:var(--danger)"><strong>解读失败：</strong>' + escapeHtml(e.message) + '<br><br>可能原因：Key无效/余额不足。可清空Key切换回本地模式。</div>'; }
+  finally { btn.classList.remove("loading"); btn.disabled=false; }
+}
+
+function fmtInterpret(txt, mode) {
+  var sections = ["🎯 核心结论","🧪 实验怎么做的","📊 数据怎么看","💪 训练应用","📚 术语解释"];
+  var html = '<div class="interpret-box' + (mode==="local"?" local-mode":"") + '">';
+  var rem = txt;
+  for(var i=0; i<sections.length; i++) {
+    var sec = sections[i];
+    var idx = rem.indexOf(sec);
+    if(idx>=0) {
+      rem = rem.substring(idx);
+      var nextIdx = rem.length;
+      for(var j=i+1; j<sections.length; j++) { var ni = rem.indexOf(sections[j], sec.length); if(ni>0 && ni<nextIdx) nextIdx=ni; }
+      var content = rem.substring(0, nextIdx).trim();
+      var body = content.substring(sec.length).trim();
+      html += "<h4>" + sec + "</h4><p>" + escapeHtml(body).replace(/\n/g,"<br>") + "</p>";
+      rem = rem.substring(nextIdx);
+    }
+  }
+  if(rem.trim()) html += "<p>" + escapeHtml(rem.trim()).replace(/\n/g,"<br>") + "</p>";
+  html += "</div>";
+  return html;
+}
+
+// ===== Local Interpret Engine =====
+var GLOSSARY = {
+  "hypertrophy":"肌肥大 — 肌肉纤维变粗变大，通俗说就是「长肌肉」。抗阻训练是最主要的刺激手段。",
+  "muscle protein synthesis":"肌肉蛋白合成（MPS）— 身体制造新肌肉蛋白的过程，等于「肌肉在建设中」。训练和蛋白质摄入都能提升MPS。",
+  "concentric contraction":"向心收缩 — 肌肉缩短发力的阶段，比如把哑铃举起来的过程。",
+  "eccentric contraction":"离心收缩 — 肌肉拉长时发力的阶段，比如把哑铃慢慢放下。离心训练对增肌特别有效。",
+  "isometric contraction":"等长收缩 — 肌肉紧张但长度不变，比如平板支撑。",
+  "one repetition maximum":"1RM（一次最大重量）— 你最多只能举起一次的最大重量，用来衡量力量水平。",
+  "volume":"训练容量 — 一次训练的总量，通常=组数×次数×重量。容量越大对增肌刺激越强，但也越容易疲劳。",
+  "progressive overload":"渐进超负荷 — 随着身体变强，逐步增加重量/次数/组数。这是增肌增力的核心原则。",
+  "periodization":"周期化训练 — 把训练分成不同阶段（如增肌期→力量期→减脂期），有计划地变化。",
+  "failure":"力竭 — 做到不能再完整做一个标准动作为止。训练到力竭能最大化刺激，但恢复也更慢。",
+  "repetitions in reserve":"RIR（保留次数）— 做完一组后，你「还能再做几个」的估算。RIR 2=还能做2个就力竭。",
+  "rate of perceived exertion":"RPE（自感用力程度）— 用自己的感觉打分，1-10分制，RPE 8=感觉挺吃力但还能做2-3个。",
+  "p-value":"P值 — 衡量结果是否「纯属巧合」的概率。P<0.05 意味着结果有统计学意义（95%以上不是巧合）。P 越小越好。",
+  "confidence interval":"置信区间（CI）— 真实效果大概率在哪个范围。区间越窄越精确。",
+  "effect size":"效应量 — 效果有多大。0.2=小效果，0.5=中等，0.8+=大效果。只看P值不够，效应量大才说明实际有用。",
+  "heterogeneity":"异质性 — 不同研究之间结果差异有多大。I²<25%=低，25-50%=中，>75%=高。",
+  "randomized controlled trial":"随机对照试验（RCT）— 把人随机分成实验组和对照组，是因果推断的黄金标准。",
+  "meta-analysis":"Meta分析 — 把多个RCT研究的结果合并统计，得出一个综合结论。证据等级的巅峰。",
+  "systematic review":"系统综述 — 按照严格规范搜索所有相关研究，全面审查某个问题的证据。",
+  "placebo":"安慰剂 — 看起来像真的但没有效果的东西（如糖丸），用来排除心理作用。",
+  "blinding":"盲法 — 受试者或研究人员不知道谁在实验组/对照组，防止偏见。双盲=双方都不知道。",
+  "sample size":"样本量 — 研究参与人数。人越多统计越稳，太少可能测不出真实效果。",
+  "crossover design":"交叉设计 — 同一批人先后接受实验和对照处理，自己做自己的对照。",
+  "resistance training":"抗阻训练 — 用重量对抗阻力的训练，也就是「举铁」。包括哑铃、杠铃、器械、弹力带等。",
+  "strength":"肌力 — 你能产生多大力量，通常用1RM衡量。",
+  "endurance":"肌耐力 — 肌肉能持续做多少次/多久，比如能做多少俯卧撑。",
+  "power":"爆发力 — 力量和速度的结合，比如跳多高、扔多远。",
+  "body composition":"体成分 — 身体里脂肪和肌肉各占多少。增肌减脂的终极衡量指标。",
+  "lean body mass":"瘦体重（LBM）— 去掉脂肪后的身体重量，主要是肌肉、骨骼和水分。",
+  "creatine":"肌酸 — 最被证实的补剂之一，能提升力量和高强度运动表现。储水式增重（不是脂肪）。",
+  "whey protein":"乳清蛋白 — 牛奶中提取的快速吸收蛋白，亮氨酸含量高，训练后喝对增肌最佳。",
+  "casein":"酪蛋白 — 牛奶中另一种蛋白，消化慢，适合睡前喝，持续供应氨基酸。",
+  "branched chain amino acids":"BCAA（支链氨基酸）— 亮氨酸、异亮氨酸、缬氨酸。亮氨酸是触发MPS的关键开关。",
+  "leucine":"亮氨酸 — 最关键的氨基酸，是开启肌肉蛋白合成的「点火钥匙」。乳清蛋白含量高。",
+  "anabolic":"合成代谢 — 身体在「建设模式」，制造新的肌肉组织。",
+  "catabolic":"分解代谢 — 身体在「拆解模式」，消耗肌肉组织。过度训练或营养不良会导致。",
+  "testosterone":"睾酮 — 主要合成代谢激素，促进肌肉生长，男女都有，男性水平更高。",
+  "cortisol":"皮质醇 — 压力激素，分解代谢，长期过高不利于增肌。过度训练会让皮质醇居高不下。",
+  "growth hormone":"生长激素 — 促进生长和修复的激素，深度睡眠时分泌最多。",
+  "insulin like growth factor":"IGF-1（胰岛素样生长因子）— 在生长激素刺激下分泌，是实际执行肌肉生长的分子。",
+  "mitochondrial biogenesis":"线粒体增生 — 细胞内能量工厂变多变强，耐力训练的典型适应。",
+  "satellite cells":"卫星细胞 — 肌肉干细胞，损伤后被激活来修复和增长肌纤维。",
+  "myofibrillar":"肌原纤维蛋白 — 负责收缩的肌肉蛋白，力量训练主要增长这类蛋白。",
+  "sarcoplasmic":"肌浆蛋白 — 肌肉细胞内的液体和能量储备，健美式训练更多增长这类。",
+  "DOMS":"延迟性肌肉酸痛（DOMS）— 训练后24-72小时出现的酸痛，是肌肉适应信号，不是练得好的唯一指标。",
+  "overtraining":"过度训练 — 训练超过恢复能力，表现下降、疲劳、睡眠差、情绪低落。需要减量休息。",
+  "supercompensation":"超量恢复 — 训练→疲劳→恢复后身体变得比之前更强。合理的训练频率就是踩在这个节奏上。",
+  "glycogen":"糖原 — 储存在肌肉和肝脏里的碳水储备，是力量训练的主要燃料。",
+  "basal metabolic rate":"基础代谢率（BMR）— 躺着不动一天消耗的热量。占全天总消耗的60-70%。",
+  "energy balance":"能量平衡 — 摄入热量 vs 消耗热量。正平衡=增重，负平衡=减重。",
+  "protein timing":"蛋白质摄入时机 — 训练前后吃蛋白对增肌的影响。共识是全天总摄入量比精确时机更重要。",
+  "glycemic index":"升糖指数（GI）— 食物升高血糖的速度。低GI食物饱腹感更强。",
+  "insulin sensitivity":"胰岛素敏感度 — 细胞对胰岛素响应好不好。敏感度高=更容易吸收营养。运动能提升胰岛素敏感度。"
+};
+
+var STUDY_KEYWORDS = {
+  design: {
+    rct: ["randomized","randomised","randomly assigned","control group","placebo","double-blind","single-blind","parallel group","crossover"],
+    meta: ["meta-analysis","meta analysis","systematic review","pooled analysis","literature search","prisma","database search"],
+    observational: ["cohort","cross-sectional","longitudinal","prospective","retrospective","observational"],
+    lab: ["in vitro","in vivo","muscle biopsy","blood sample","mri","ultrasound","dxa","dexa"]
+  },
+  population: {
+    trained: ["trained","experienced","athlete","elite","competitive"],
+    untrained: ["untrained","novice","sedentary","recreationally active","healthy adults"],
+    elderly: ["elderly","older adults","aging","sarcopenia","postmenopausal"],
+    youth: ["adolescent","youth","children","young"],
+    male: ["men","male","males"],
+    female: ["women","female","females"]
+  },
+  intervention: {
+    resistance: ["resistance training","weight training","strength training","resistance exercise","weightlifting","lifting"],
+    endurance: ["endurance","aerobic","cardio","running","cycling","hiit","high-intensity interval"],
+    supplement: ["supplement","creatine","protein","whey","bcaa","beta-alanine","caffeine","citrulline","nitrate"],
+    nutrition: ["diet","nutrition","caloric","protein intake","carbohydrate","fat intake","meal","fasting"],
+    other: ["blood flow restriction","bfr","electrical stimulation","vibration","stretching","foam rolling"]
+  },
+  outcome: {
+    hypertrophy: ["hypertrophy","muscle growth","muscle mass","muscle size","cross-sectional area","csa","lean body mass","fat-free mass","thickness"],
+    strength: ["strength","1rm","one repetition maximum","maximal strength","force","torque"],
+    power: ["power","jump","sprint","velocity","rate of force development","rfd"],
+    endurance: ["endurance","vo2max","aerobic capacity","time to exhaustion","repetitions to failure"],
+    bodycomp: ["body composition","fat mass","body fat","weight loss","fat loss","body weight"],
+    recovery: ["recovery","soreness","doms","damage","inflammation","creatine kinase","ck"],
+    hormones: ["testosterone","cortisol","growth hormone","igf-1","anabolic","catabolic"]
+  }
+};
+
+function extractNumbers(txt) {
+  var out = {};
+  var mP = txt.match(/[Pp]\s*[=<>≤≥]\s*([\d.]+)/); if(mP) out.pValue = mP[1];
+  var mCI = txt.match(/(\d+\.?\d*)\s*%\s*CI[:\s]+([\d.]+)\s*[-–—to]+\s*([\d.]+)/i) || txt.match(/CI[:\s]+([\d.]+)\s*[-–—to]+\s*([\d.]+)/i) || txt.match(/95%\s*CI[:\s]+([\d.]+)[-–—]([\d.]+)/i);
+  if(mCI) out.confidenceInterval = mCI.length===3 ? (mCI[2]+" - "+mCI[3]) : (mCI.length===4 ? (mCI[2]+" - "+mCI[3]) : (mCI[1]+" - "+mCI[2]));
+  var mES = txt.match(/[Ee]ffect\s*size[:\s=]+([\d.]+)/) || txt.match(/Cohen.?s d[:\s=]+([\d.]+)/) || txt.match(/Hedges.? g[:\s=]+([\d.]+)/) || txt.match(/[Ee][Ss][:\s=]+([\d.]+)/);
+  if(mES) out.effectSize = mES[1];
+  var mN = txt.match(/[Nn]\s*[=:]\s*(\d+[\d,]*)/) || txt.match(/(\d+[\d,]*)\s*(participants|subjects|individuals|adults|men|women|males|females|people|volunteers)/i);
+  if(mN) out.sampleSize = mN[1].replace(/,/g,"");
+  var mI2 = txt.match(/I\s*[²2]\s*[=:]\s*([\d.]+)\s*%/);
+  if(mI2) out.iSquared = mI2[1];
+  return out;
+}
+
+function detectTopics(txt, lower) {
+  var found = {design:[], population:[], intervention:[], outcome:[]};
+  for(var cat in STUDY_KEYWORDS) {
+    var subs = STUDY_KEYWORDS[cat];
+    for(var sub in subs) {
+      var terms = subs[sub];
+      for(var i=0; i<terms.length; i++) {
+        if(lower.indexOf(terms[i]) >= 0) { found[cat].push(sub); break; }
+      }
+    }
+  }
+  return found;
+}
+
+function findGlossaryTerms(txt, lower) {
+  var found = [];
+  for(var en in GLOSSARY) {
+    if(lower.indexOf(en.toLowerCase()) >= 0) found.push({en:en, zh:GLOSSARY[en]});
+  }
+  return found.filter(function(t,i){
+    return !found.some(function(o,j){ return i!==j && o.en.indexOf(t.en)>=0 && o.en.length > t.en.length; });
+  });
+}
+
+function localInterpret(idx) {
+  var box = document.getElementById("intBox-" + idx), btn = document.getElementById("aiBtn-" + idx);
+  var r = currentResults[idx];
+  if(box.classList.contains("open")){ box.classList.remove("open"); btn.textContent="📖 本地智能解读"; return; }
+  box.classList.add("open"); box.innerHTML='<div class="interpret-loading"><span class="spinner" style="display:inline-block"></span> 本地引擎分析中...</div>';
+  btn.textContent="📖 隐藏解读";
+  fetchAbstract(r.id).then(function(ab){
+    var lower = ab.toLowerCase();
+    var stats = extractNumbers(ab);
+    var topics = detectTopics(ab, lower);
+    var glossary = findGlossaryTerms(ab, lower);
+    box.innerHTML = buildLocalResult(r, ab, stats, topics, glossary);
+  }).catch(function(e){
+    var lower = r.title.toLowerCase();
+    var stats = {};
+    var topics = detectTopics(r.title, lower);
+    var glossary = findGlossaryTerms(r.title, lower);
+    box.innerHTML = buildLocalResult(r, "（摘要未能加载，仅基于标题分析）", stats, topics, glossary);
+  });
+}
+
+function buildLocalResult(r, ab, stats, topics, glossary) {
+  var h = '<span class="interpret-mode-label local">📖 本地智能引擎解读（免API · 即时）</span>';
+  h += '<div class="interpret-box local-mode">';
+
+  // 🎯 Core conclusion
+  h += "<h4>🎯 核心结论</h4>";
+  var hasResistance = topics.intervention.indexOf("resistance")>=0;
+  var hasHypertrophy = topics.outcome.indexOf("hypertrophy")>=0;
+  var hasStrength = topics.outcome.indexOf("strength")>=0;
+  var hasSupplement = topics.intervention.indexOf("supplement")>=0;
+  var hasNutrition = topics.intervention.indexOf("nutrition")>=0;
+  var isMeta = topics.design.indexOf("meta")>=0;
+  var isRCT = topics.design.indexOf("rct")>=0;
+  var popTrained = topics.population.indexOf("trained")>=0;
+  var popUntrained = topics.population.indexOf("untrained")>=0;
+  var popElderly = topics.population.indexOf("elderly")>=0;
+  var conc = "";
+  if(hasResistance&&hasHypertrophy) conc = "该研究探讨了抗阻训练对肌肉增长的效果。" + (stats.effectSize ? ("报告效应量为 " + stats.effectSize + "。") : "");
+  else if(hasResistance&&hasStrength) conc = "该研究探讨了抗阻训练对力量提升的效果。";
+  else if(hasSupplement&&hasHypertrophy) conc = "该研究探讨了补剂对肌肉增长的影响。";
+  else if(hasNutrition) conc = "该研究探讨了营养/饮食策略对训练效果的影响。";
+  else conc = "该研究探讨了健身相关的科学问题。";
+  if(isMeta) conc += "这是一篇Meta分析/系统综述，属于最高等级的科学证据。";
+  else if(isRCT) conc += "这是一项随机对照试验（RCT），证据等级较高。";
+  if(stats.pValue) { conc += " P值为 " + stats.pValue + "，"; conc += (parseFloat(stats.pValue)<0.05 ? "结果表明有统计学意义，不是巧合。" : "结果未达统计显著。"); }
+  if(stats.confidenceInterval) conc += " 95%置信区间为 " + stats.confidenceInterval + "。";
+  h += "<p>" + conc + "</p>";
+
+  // 🧪 Study design
+  h += "<h4>🧪 实验怎么做的</h4>";
+  var design = "研究类型：" + (isMeta ? "Meta分析/系统综述（综合了多项研究的数据）" : (isRCT ? "随机对照试验（将受试者随机分组比较）" : "未明确检测到RCT关键词，可能是观察性研究或综述"));
+  if(stats.sampleSize) design += "，共纳入约 " + stats.sampleSize + " 名受试者";
+  if(popTrained) design += "，对象为有训练经验的人群";
+  else if(popUntrained) design += "，对象为未训练/初学者人群";
+  else if(popElderly) design += "，对象为老年人群";
+  design += "。";
+  if(hasResistance) design += " 干预方式为抗阻训练（举铁）。";
+  if(hasSupplement) design += " 使用了补剂进行干预。";
+  design += " 具体实验设计细节请阅读下方摘要原文。";
+  h += "<p>" + design + "</p>";
+
+  // 📊 Statistics
+  h += "<h4>📊 数据怎么看</h4>";
+  var data = "";
+  if(stats.pValue) {
+    var pv = parseFloat(stats.pValue);
+    if(pv<0.001) data += "P值 < 0.001，非常显著——结果几乎不可能是巧合造成的，可信度很高。";
+    else if(pv<0.01) data += "P值 = " + stats.pValue + "，非常显著——只有不到 1% 的概率是巧合。";
+    else if(pv<0.05) data += "P值 = " + stats.pValue + "，有统计学意义——只有不到 5% 的概率是巧合，结论较可靠。";
+    else data += "P值 = " + stats.pValue + "，未达到统计学显著水平（P < 0.05 才算有统计学意义），可能是样本量不够或效果本身不大。";
+  }
+  if(stats.confidenceInterval) data += " 95%置信区间 " + stats.confidenceInterval + " 意味着真实效果大概率在这个范围内。区间越窄、越不跨过零，结论越可靠。";
+  if(stats.effectSize) {
+    var es = parseFloat(stats.effectSize);
+    data += " 效应量 = " + stats.effectSize + "，属于" + (es>=0.8 ? "大效果（实际意义明显）" : (es>=0.5 ? "中等效果" : (es>=0.2 ? "小效果" : "极小效果"))) + "。";
+  }
+  if(stats.iSquared) {
+    var i2 = parseFloat(stats.iSquared);
+    data += " I² = " + stats.iSquared + "%，异质性属于" + (i2>75 ? "高水平（不同研究间差异大，结论需谨慎）" : (i2>50 ? "中等水平" : (i2>25 ? "中低水平" : "低水平（研究间一致性较高）"))) + "。";
+  }
+  if(!data) data = "未能从摘要中提取到统计数据。建议查看原文了解具体数值。一般来说，P值<0.05意味着结果不太可能是巧合；效应量越大越有实际意义。";
+  h += "<p>" + data + "</p>";
+
+  // 💪 Training application
+  h += "<h4>💪 训练应用</h4>";
+  var app = "";
+  if(hasResistance&&hasHypertrophy) {
+    app = "抗阻训练是增肌最有效的手段。建议每周每个肌群做10-20组、每组8-12次、接近力竭。";
+    if(popTrained) app += " 如果你是训练有素者，可能需要更大容量或变换训练方式来继续进步。";
+    else if(popUntrained) app += " 初学者效果通常最明显，坚持规律训练3-6个月就能看到显著变化。";
+  } else if(hasResistance&&hasStrength) {
+    app = "提升力量建议做5-8次/组的高强度训练（75-85% 1RM），组间休息2-3分钟。";
+  } else if(hasSupplement) {
+    app = "补剂只在训练和饮食到位的基础上才有效。不要指望只吃补剂不练就长肌肉。";
+  } else {
+    app = "建议结合原文和自身情况应用。作为通用原则：规律训练+充足蛋白（1.6-2.2g/kg体重/天）+良好睡眠是最可靠的增肌公式。";
+  }
+  if(hasNutrition) app += " 营养方面，训练日蛋白质摄入要充足（建议1.6-2.2g/kg体重），总热量略高于维持水平有助于增肌。";
+  app += " 注意个体差异很大，实验中看到的「平均效果」不能直接照搬到每个人身上。听身体的声音最重要。";
+  h += "<p>" + app + "</p>";
+
+  // 📚 Glossary
+  h += "<h4>📚 术语解释</h4>";
+  if(glossary.length>0) {
+    var maxTerms = 12;
+    var shown = glossary.slice(0, maxTerms);
+    h += "<ul>";
+    for(var i=0; i<shown.length; i++) { h += "<li><strong>" + shown[i].en + "</strong>：" + shown[i].zh + "</li>"; }
+    if(glossary.length>maxTerms) h += "<li>… 还有 " + (glossary.length-maxTerms) + " 个术语，可展开摘要查看原文</li>";
+    h += "</ul>";
+  } else {
+    h += "<p>未在摘要中检测到已知术语。建议阅读英文摘要原文，利用内置术语库对照理解。</p>";
+  }
+  if(stats.pValue) {
+    h += '<p style="margin-top:8px"><strong>💡 统计小课堂：</strong>P值（P-value）越小，说明实验组和对照组差异是「纯属巧合」的概率越低。一般 P < 0.05 就算过了「及格线」，P < 0.01 就是「很稳」，P < 0.001 就是「极其稳」。但P值小不等于效果大——还要看效应量（Effect Size）。</p>';
+  }
+
+  h += "</div>";
+  return h;
+}
+
+// ===== Fitness Calculator =====
+var calcGender = "male";
+function setGender(g) {
+  calcGender = g;
+  document.getElementById("genderMale").classList.toggle("active", g==="male");
+  document.getElementById("genderFemale").classList.toggle("active", g==="female");
+  document.getElementById("hipField").style.display = g==="female" ? "block" : "none";
+  doCalc();
+}
+function toggleCalc() {
+  var body = document.getElementById("calcBody"), btn = document.getElementById("calcToggle");
+  if(body.classList.contains("open")) {
+    body.classList.remove("open"); btn.classList.remove("active");
+    btn.textContent = "🧮 健身计算器（体脂率 · FFMI · 基础代谢 · 总消耗）— 点我展开";
+  } else {
+    body.classList.add("open"); btn.classList.add("active");
+    btn.textContent = "🧮 健身计算器（体脂率 · FFMI · 基础代谢 · 总消耗）— 点我收起";
+  }
+}
+function doCalc() {
+  var age = parseFloat(document.getElementById("calcAge").value) || 0;
+  var h = parseFloat(document.getElementById("calcHeight").value) || 0;
+  var w = parseFloat(document.getElementById("calcWeight").value) || 0;
+  var neck = parseFloat(document.getElementById("calcNeck").value) || 0;
+  var waist = parseFloat(document.getElementById("calcWaist").value) || 0;
+  var hip = parseFloat(document.getElementById("calcHip").value) || 0;
+  var act = parseFloat(document.getElementById("calcActivity").value) || 1.2;
+  var cards = document.querySelectorAll("#calcResults .calc-card-value");
+  
+  if(!age || !h || !w) {
+    cards[0].textContent = "--"; cards[1].textContent = "--"; cards[2].textContent = "--"; cards[3].textContent = "--";
+    return;
+  }
+  
+  // US Navy body fat formula
+  var bf = 0;
+  if(calcGender === "male") {
+    if(neck && waist && h) bf = 86.010 * Math.log10(waist/2.54 - neck/2.54) - 70.041 * Math.log10(h/2.54) + 36.76;
+    else bf = 0;
+  } else {
+    if(neck && waist && hip && h) bf = 163.205 * Math.log10(waist/2.54 + hip/2.54 - neck/2.54) - 97.684 * Math.log10(h/2.54) - 78.387;
+    else bf = 0;
+  }
+  bf = Math.max(2, Math.min(50, bf));
+  
+  // FFMI
+  var lbm = w * (1 - bf/100);
+  var ffmi = lbm / Math.pow(h/100, 2);
+  // Normalize FFMI to standard height (removes height bias)
+  var ffmiNorm = ffmi + 6.1 * (1.8 - h/100);
+  
+  // BMR (Mifflin-St Jeor)
+  var bmr = 0;
+  if(calcGender === "male") bmr = 10*w + 6.25*h - 5*age + 5;
+  else bmr = 10*w + 6.25*h - 5*age - 161;
+  
+  // TDEE
+  var tdee = bmr * act;
+  
+  cards[0].textContent = (bf ? bf.toFixed(1) + "%" : "缺数据*");
+  cards[1].textContent = ffmi.toFixed(1);
+  cards[2].textContent = Math.round(bmr) + " kcal";
+  cards[3].textContent = Math.round(tdee) + " kcal";
+}
+
+// Attach listeners to calculator inputs
+["calcAge","calcHeight","calcWeight","calcNeck","calcWaist","calcHip","calcActivity"].forEach(function(id){
+  var el = document.getElementById(id);
+  if(el) el.addEventListener("input", doCalc);
+});
+
+
+function toggleShare() {
+  var body = document.getElementById("shareBody"), btn = document.getElementById("shareToggle");
+  if(body.classList.contains("open")) {
+    body.classList.remove("open"); btn.textContent = "📤 如何分享这个网站给别人？（点我查看）";
+  } else {
+    body.classList.add("open"); btn.textContent = "📤 如何分享这个网站给别人？（点我收起）";
+  }
+}
+
+</script>
+</body>
+</html>
